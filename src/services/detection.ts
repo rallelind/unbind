@@ -15,6 +15,61 @@ export interface Detection {
 
 const replicate = new Replicate();
 
+/**
+ * Calculate Intersection over Union (IoU) between two bounding boxes
+ */
+function calculateIoU(box1: BoundingBox, box2: BoundingBox): number {
+  const x1 = Math.max(box1.x, box2.x);
+  const y1 = Math.max(box1.y, box2.y);
+  const x2 = Math.min(box1.x + box1.width, box2.x + box2.width);
+  const y2 = Math.min(box1.y + box1.height, box2.y + box2.height);
+
+  const intersectionWidth = Math.max(0, x2 - x1);
+  const intersectionHeight = Math.max(0, y2 - y1);
+  const intersectionArea = intersectionWidth * intersectionHeight;
+
+  const box1Area = box1.width * box1.height;
+  const box2Area = box2.width * box2.height;
+  const unionArea = box1Area + box2Area - intersectionArea;
+
+  return unionArea > 0 ? intersectionArea / unionArea : 0;
+}
+
+/**
+ * Non-Maximum Suppression to remove overlapping detections
+ * Uses IoU-only suppression to avoid issues with large encompassing boxes
+ */
+function applyNMS(detections: Detection[], iouThreshold: number = 0.5): Detection[] {
+  if (detections.length === 0) return [];
+
+  // Sort by confidence (highest first)
+  const sorted = [...detections].sort((a, b) => b.confidence - a.confidence);
+  const kept: Detection[] = [];
+  const suppressed = new Set<number>();
+
+  for (let i = 0; i < sorted.length; i++) {
+    if (suppressed.has(i)) continue;
+
+    const current = sorted[i]!;
+    kept.push(current);
+
+    // Check all remaining detections
+    for (let j = i + 1; j < sorted.length; j++) {
+      if (suppressed.has(j)) continue;
+
+      const other = sorted[j]!;
+      const iou = calculateIoU(current.box, other.box);
+
+      // Suppress only if IoU is high (significant overlap)
+      if (iou > iouThreshold) {
+        suppressed.add(j);
+      }
+    }
+  }
+
+  return kept;
+}
+
 interface GroundingDinoDetection {
   label?: string;
   class?: string;
@@ -35,9 +90,9 @@ export async function detectBooks(imageBase64: string): Promise<Detection[]> {
     {
       input: {
         image: imageUrl,
-        query: "single book spine",
-        box_threshold: 0.18,
-        text_threshold: 0.18,
+        query: "book spine",
+        box_threshold: 0.12,
+        text_threshold: 0.12,
       },
     }
   );
@@ -60,8 +115,8 @@ export async function detectBooks(imageBase64: string): Promise<Detection[]> {
     }
   }
 
-  // Convert to our format - no filtering, just raw detections
-  return detections
+  // Convert to our format
+  const rawDetections = detections
     .map((det) => {
       const bbox = det.box ?? det.bbox ?? det.xyxy;
       if (!bbox || bbox.length < 4) {
@@ -81,6 +136,27 @@ export async function detectBooks(imageBase64: string): Promise<Detection[]> {
         },
       };
     })
-    .filter((det): det is Detection => det !== null)
-    .sort((a, b) => a.box.x - b.box.x); // Sort left to right
+    .filter((det): det is Detection => det !== null);
+
+  console.log(`Raw detections: ${rawDetections.length}`);
+
+  // Find max dimensions to filter out unreasonably large boxes
+  const maxX = Math.max(...rawDetections.map(d => d.box.x + d.box.width));
+  const maxY = Math.max(...rawDetections.map(d => d.box.y + d.box.height));
+  
+  // Filter out boxes that are too wide (>20% of image) - these are likely false positives
+  const filteredDetections = rawDetections.filter(det => {
+    const widthRatio = det.box.width / maxX;
+    return widthRatio < 0.20; // A single book spine shouldn't be more than 20% of image width
+  });
+
+  console.log(`After size filter: ${filteredDetections.length}`);
+
+  // Apply Non-Maximum Suppression to remove overlapping boxes
+  const nmsDetections = applyNMS(filteredDetections, 0.5);
+
+  console.log(`After NMS: ${nmsDetections.length}`);
+
+  // Sort left to right by x position
+  return nmsDetections.sort((a, b) => a.box.x - b.box.x);
 }
