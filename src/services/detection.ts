@@ -36,6 +36,48 @@ function calculateIoU(box1: BoundingBox, box2: BoundingBox): number {
 }
 
 /**
+ * Resolve significant horizontal overlaps between adjacent bounding boxes.
+ * Only trim when one box significantly overlaps another (>50% of the current box width),
+ * and only if trimming won't make the box too narrow.
+ */
+function resolveHorizontalOverlaps(detections: Detection[]): Detection[] {
+  if (detections.length < 2) return detections;
+
+  // Sort left-to-right by x position
+  const sorted = [...detections].sort((a, b) => a.box.x - b.box.x);
+  const resolved: Detection[] = [];
+
+  for (let i = 0; i < sorted.length; i++) {
+    const current = { ...sorted[i]!, box: { ...sorted[i]!.box } };
+    
+    if (i > 0) {
+      const prev = resolved[resolved.length - 1]!;
+      const prevRight = prev.box.x + prev.box.width;
+      const currentLeft = current.box.x;
+      const overlap = prevRight - currentLeft;
+
+      // Only trim if the current box is significantly inside the previous box
+      // (overlap > 50% of current box width means current box starts well inside prev)
+      if (overlap > 0) {
+        const overlapRatioOfCurrent = overlap / current.box.width;
+        const newPrevWidth = currentLeft - prev.box.x;
+        
+        // Only trim if:
+        // 1. Current box is significantly overlapping (>50% of current inside prev)
+        // 2. Trimming won't make prev too narrow (at least 50% of original width remains)
+        if (overlapRatioOfCurrent > 0.5 && newPrevWidth >= prev.box.width * 0.5) {
+          prev.box.width = newPrevWidth;
+        }
+      }
+    }
+    
+    resolved.push(current);
+  }
+
+  return resolved;
+}
+
+/**
  * Non-Maximum Suppression to remove overlapping detections
  * Uses IoU-only suppression to avoid issues with large encompassing boxes
  */
@@ -217,6 +259,9 @@ export async function detectBooks(imageBase64: string): Promise<Detection[]> {
 
   console.log(`After NMS: ${nmsDetections.length}`);
 
+  // Step 4: Resolve any remaining horizontal overlaps between adjacent boxes
+  const resolvedDetections = resolveHorizontalOverlaps(nmsDetections);
+
   // Sort left to right by x position
-  return nmsDetections.sort((a, b) => a.box.x - b.box.x);
+  return resolvedDetections.sort((a, b) => a.box.x - b.box.x);
 }

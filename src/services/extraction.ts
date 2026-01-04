@@ -15,17 +15,9 @@ export async function extractBookInfo(
     messages: [
       {
         role: "system",
-        content: `You are analyzing a cropped image of a book spine from a bookshelf.
-
-This crop is centered on ONE specific book spine. Extract ONLY the title and author printed on that central spine.
-
-CRITICAL RULES:
-- Look at the physical spine structure - identify which text is actually printed ON the central spine
-- Text at the far left or right edges likely belongs to adjacent books - IGNORE IT
-- If text seems to "bleed" in from a neighboring spine, do not include it
-
+        content: `Extract the title and author from this book spine image.
 Respond in JSON: {"title": "...", "author": "..."}
-Use null if you cannot read the title or author.`,
+Use null if unreadable.`,
       },
       {
         role: "user",
