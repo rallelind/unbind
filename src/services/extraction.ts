@@ -3,7 +3,6 @@ import OpenAI from "openai";
 export interface BookInfo {
   title: string | null;
   author: string | null;
-  confidence: number;
 }
 
 const openai = new OpenAI();
@@ -16,12 +15,17 @@ export async function extractBookInfo(
     messages: [
       {
         role: "system",
-        content: `You are analyzing a cropped image of a single book spine or cover. 
-Extract the title and author if visible. Be concise.
-Respond in JSON format: {"title": "...", "author": "...", "confidence": 0.0-1.0}
-If you cannot read the title, use null.
-If you cannot read the author, use null.
-The confidence should reflect how certain you are about the text extraction.`,
+        content: `You are analyzing a cropped image of a book spine from a bookshelf.
+
+This crop is centered on ONE specific book spine. Extract ONLY the title and author printed on that central spine.
+
+CRITICAL RULES:
+- Look at the physical spine structure - identify which text is actually printed ON the central spine
+- Text at the far left or right edges likely belongs to adjacent books - IGNORE IT
+- If text seems to "bleed" in from a neighboring spine, do not include it
+
+Respond in JSON: {"title": "...", "author": "..."}
+Use null if you cannot read the title or author.`,
       },
       {
         role: "user",
@@ -36,12 +40,12 @@ The confidence should reflect how certain you are about the text extraction.`,
       },
     ],
     response_format: { type: "json_object" },
-    max_tokens: 150,
+    max_tokens: 100,
   });
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
-    return { title: null, author: null, confidence: 0 };
+    return { title: null, author: null };
   }
 
   try {
@@ -49,10 +53,9 @@ The confidence should reflect how certain you are about the text extraction.`,
     return {
       title: parsed.title ?? null,
       author: parsed.author ?? null,
-      confidence: parsed.confidence ?? 0.5,
     };
   } catch {
-    return { title: null, author: null, confidence: 0 };
+    return { title: null, author: null };
   }
 }
 

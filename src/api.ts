@@ -17,7 +17,6 @@ export interface Book {
   id: string;
   title: string | null;
   author: string | null;
-  confidence: number;
   boundingBox: BoundingBox;
   detectionConfidence: number;
 }
