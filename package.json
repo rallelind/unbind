@@ -16,6 +16,7 @@
     "@trpc/server": "^11.8.1",
     "bun-plugin-tailwind": "^0.1.2",
     "hono": "^4.11.3",
+    "lucide-react": "^0.562.0",
     "openai": "^6.15.0",
     "react": "^19",
     "react-dom": "^19",

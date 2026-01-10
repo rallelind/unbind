@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Crimson Pro", Georgia, serif;
+  --font-ui: "Inter", system-ui, sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  /* stone-800 */
+  background-color: #292524;
+  /* stone-100 */
+  color: #f5f5f4;
+  font-family: var(--font-body);
+  position: relative;
+}
+
+/* Custom selection colors using stone */
+::selection {
+  /* stone-500 */
+  background-color: #78716c;
+  /* stone-100 */
+  color: #f5f5f4;
+}
