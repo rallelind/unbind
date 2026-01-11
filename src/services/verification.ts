@@ -238,10 +238,16 @@ Search Google Books to find the correct book. If you can see the spine image, us
           const args = JSON.parse(toolCall.arguments) as z.infer<typeof searchBooksInputSchema>;
           const results = await searchGoogleBooks(args.title, args.author);
 
+          const formattedResults = results.length === 0
+            ? "No books found. Try a different search query."
+            : results.map((r, i) => 
+                `${i + 1}. "${r.title}" by ${r.author ?? "Unknown"}\n   Cover: ${r.thumbnail ?? "No cover available"}`
+              ).join("\n\n");
+
           toolOutputs.push({
             type: "function_call_output",
             call_id: toolCall.call_id,
-            output: JSON.stringify(results),
+            output: formattedResults,
           });
         }
       }
