@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAnalyzerStore, type Book } from "../../stores/analyzer";
-import { Check, Pencil, Loader2 } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
+import { Button, Input, Label, Spinner } from "../ui";
 
 interface BookCardProps {
   book: Book;
@@ -39,7 +40,7 @@ export function BookCard({ book }: BookCardProps) {
     return (
       <div className="px-4 py-6 border-t border-stone-700 bg-stone-800/50">
         <div className="flex items-center justify-center gap-3 text-stone-400">
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <Spinner size="md" />
           <span className="font-ui text-sm">Extracting book info...</span>
         </div>
       </div>
@@ -51,44 +52,41 @@ export function BookCard({ book }: BookCardProps) {
       {isEditing ? (
         <div className="space-y-3">
           <div>
-            <label className="block text-stone-500 text-xs font-ui mb-1">
-              Title
-            </label>
-            <input
+            <Label>Title</Label>
+            <Input
               type="text"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-stone-700 border border-stone-600 text-stone-100 font-ui text-sm focus:outline-none focus:ring-2 focus:ring-stone-400/50"
               placeholder="Enter title..."
             />
           </div>
           <div>
-            <label className="block text-stone-500 text-xs font-ui mb-1">
-              Author
-            </label>
-            <input
+            <Label>Author</Label>
+            <Input
               type="text"
               value={editAuthor}
               onChange={(e) => setEditAuthor(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-stone-700 border border-stone-600 text-stone-100 font-ui text-sm focus:outline-none focus:ring-2 focus:ring-stone-400/50"
               placeholder="Enter author..."
             />
           </div>
           <div className="flex gap-2 pt-1">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              rounded="lg"
+              size="sm"
               onClick={() => setIsEditing(false)}
-              className="flex-1 py-2 rounded-lg border border-stone-600 text-stone-400 font-ui text-sm hover:bg-stone-700 transition-colors"
+              className="flex-1"
             >
               Cancel
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              rounded="lg"
+              size="sm"
               onClick={handleSave}
-              className="flex-1 py-2 rounded-lg bg-stone-100 text-stone-900 font-ui text-sm font-medium hover:bg-white transition-colors"
+              className="flex-1"
             >
               Save
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
@@ -111,23 +109,26 @@ export function BookCard({ book }: BookCardProps) {
           </div>
 
           <div className="flex gap-2 pt-1">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              rounded="lg"
+              size="sm"
               onClick={() => setIsEditing(true)}
-              className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg border border-stone-600 text-stone-300 font-ui text-sm hover:bg-stone-700 transition-colors"
+              className="flex-1 py-2.5"
             >
               <Pencil className="w-4 h-4" />
               Edit
-            </button>
+            </Button>
             {!isAccepted ? (
-              <button
-                type="button"
+              <Button
+                rounded="lg"
+                size="sm"
                 onClick={handleAccept}
-                className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg bg-stone-100 text-stone-900 font-ui text-sm font-medium hover:bg-white transition-colors"
+                className="flex-1 py-2.5"
               >
                 <Check className="w-4 h-4" />
                 Accept
-              </button>
+              </Button>
             ) : (
               <div className="flex items-center justify-center gap-2 flex-1 py-2.5 rounded-lg bg-stone-700 text-stone-300 font-ui text-sm">
                 <Check className="w-4 h-4" />
@@ -140,4 +141,3 @@ export function BookCard({ book }: BookCardProps) {
     </div>
   );
 }
-

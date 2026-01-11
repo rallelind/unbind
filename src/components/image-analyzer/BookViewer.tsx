@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useAnalyzerStore } from "../../stores/analyzer";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BookCard } from "./BookCard";
+import { Button, Spinner } from "../ui";
 
 export function BookViewer() {
   const dotRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
@@ -61,7 +62,7 @@ export function BookViewer() {
         {status === "extracting" && (
           <span className="flex items-center gap-1.5 text-stone-300 text-sm font-ui">
             Extracting {extractedCount}/{totalBooks}
-            <Loader2 className="w-3 h-3 animate-spin" />
+            <Spinner size="sm" />
           </span>
         )}
         {status === "complete" && (
@@ -127,15 +128,17 @@ export function BookViewer() {
 
       {/* Navigation */}
       <div className="flex items-center justify-between px-4 py-3">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          rounded="lg"
+          size="sm"
           onClick={prevBook}
           disabled={currentBookIndex === 0}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg bg-stone-700 text-stone-300 font-ui text-sm hover:bg-stone-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="gap-1"
         >
           <ChevronLeft className="w-4 h-4" />
           Previous
-        </button>
+        </Button>
 
         {/* Dot indicators */}
         <div className="flex gap-1.5 overflow-x-auto max-w-[40%] px-2 scrollbar-none">
@@ -162,15 +165,17 @@ export function BookViewer() {
           ))}
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          rounded="lg"
+          size="sm"
           onClick={nextBook}
           disabled={currentBookIndex === totalBooks - 1}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg bg-stone-700 text-stone-300 font-ui text-sm hover:bg-stone-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="gap-1"
         >
           Next
           <ChevronRight className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
 
       {/* Book card */}

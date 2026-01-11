@@ -1,16 +1,17 @@
 "use client";
 import { useRef } from "react";
 import { Drawer } from "vaul";
-import { ArrowUp, Sun, Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import { ArrowUp, Sun, AlertCircle, RotateCcw } from "lucide-react";
 import { CameraIllustration } from "../illustrations/CameraIllustration";
 import { useAnalyzerStore } from "../../stores/analyzer";
 import { useAnalyzeStream } from "../../hooks/useAnalyzeStream";
 import { BookViewer } from "./BookViewer";
+import { Button, Badge, Spinner } from "../ui";
 
 function DetectingState() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <Loader2 className="w-12 h-12 text-stone-50 animate-spin mb-4" />
+      <Spinner size="lg" className="text-stone-50 mb-4" />
       <p className="text-stone-300 font-ui text-lg">Detecting books...</p>
       <p className="text-stone-500 font-ui text-sm mt-2">
         This may take a few seconds
@@ -19,22 +20,26 @@ function DetectingState() {
   );
 }
 
-function ErrorState({ error, onRetry }: { error: string | null; onRetry: () => void }) {
+function ErrorState({
+  error,
+  onRetry,
+}: {
+  error: string | null;
+  onRetry: () => void;
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
-      <p className="text-stone-300 font-ui text-lg mb-2">Something went wrong</p>
+      <p className="text-stone-300 font-ui text-lg mb-2">
+        Something went wrong
+      </p>
       <p className="text-stone-500 font-ui text-sm mb-6 text-center px-4">
         {error ?? "Failed to analyze image"}
       </p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-stone-700 text-stone-100 font-ui font-medium text-sm hover:bg-stone-600 transition-colors"
-      >
+      <Button variant="ghost" onClick={onRetry}>
         <RotateCcw className="w-4 h-4" />
         Try Again
-      </button>
+      </Button>
     </div>
   );
 }
@@ -59,31 +64,27 @@ function IdleState({
       </p>
 
       <div className="flex gap-3 mb-8">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-700/50 text-stone-400 text-xs">
+        <Badge>
           <ArrowUp className="w-3.5 h-3.5" />
           Vertical spines
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-700/50 text-stone-400 text-xs">
+        </Badge>
+        <Badge>
           <Sun className="w-3.5 h-3.5" />
           Good lighting
-        </div>
+        </Badge>
       </div>
 
-      <button
-        type="button"
-        onClick={onTakePhoto}
-        className="w-full py-3 px-6 rounded-xl bg-stone-100 text-stone-900 font-ui font-medium text-sm hover:bg-white transition-colors"
-      >
+      <Button onClick={onTakePhoto} className="w-full">
         Take Photo
-      </button>
+      </Button>
 
-      <button
-        type="button"
+      <Button
+        variant="secondary"
         onClick={onChooseFromLibrary}
-        className="w-full mt-3 py-3 px-6 rounded-xl border border-stone-600 text-stone-300 font-ui font-medium text-sm hover:bg-stone-700/50 transition-colors"
+        className="w-full mt-3"
       >
         Choose from Library
-      </button>
+      </Button>
     </div>
   );
 }
@@ -120,8 +121,10 @@ export function Analyzer() {
 
   return (
     <Drawer.Root>
-      <Drawer.Trigger className="relative flex h-10 flex-shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-stone-700 px-6 text-sm font-medium shadow-sm transition-all hover:bg-stone-600 text-stone-100 font-ui">
-        Scan Bookshelf
+      <Drawer.Trigger asChild>
+        <Button variant="ghost" rounded="full" size="sm" className="h-10 shadow-sm">
+          Scan Bookshelf
+        </Button>
       </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/60" />
@@ -134,7 +137,9 @@ export function Analyzer() {
 
             {status === "detecting" && <DetectingState />}
             {status === "error" && <ErrorState error={error} onRetry={reset} />}
-            {(status === "extracting" || status === "complete") && <BookViewer />}
+            {(status === "extracting" || status === "complete") && (
+              <BookViewer />
+            )}
             {status === "idle" && (
               <IdleState
                 onTakePhoto={handleTakePhoto}
