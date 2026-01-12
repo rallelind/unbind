@@ -50,7 +50,7 @@ export function BookViewer() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-y-auto">
       <div className="flex items-center justify-between px-4 py-2">
         <span className="text-stone-400 text-sm font-ui">
           Book {currentBookIndex + 1} of {totalBooks}
