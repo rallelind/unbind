@@ -43,3 +43,12 @@ body {
     height: 90vh;
   }
 }
+
+/* Prevent double-tap zoom on interactive elements */
+button,
+input,
+select,
+textarea,
+a {
+  touch-action: manipulation;
+}
