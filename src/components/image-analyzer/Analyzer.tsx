@@ -89,12 +89,28 @@ function IdleState({
   );
 }
 
+function getTriggerContent(status: string, pendingCount: number, bookCount: number, extractedCount: number) {
+  if (status === "detecting") {
+    return { text: "Detecting...", showSpinner: true };
+  }
+  if (status === "extracting") {
+    return { text: `Extracting ${extractedCount}/${bookCount}`, showSpinner: true };
+  }
+  if (status === "complete" && pendingCount > 0) {
+    return { text: `Review ${pendingCount} Book${pendingCount === 1 ? "" : "s"}`, showSpinner: false };
+  }
+  return { text: "Scan Bookshelf", showSpinner: false };
+}
+
 export function Analyzer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const { status, error, setImage, reset } = useAnalyzerStore();
+  const { status, error, books, extractedCount, setImage, reset } = useAnalyzerStore();
   const { analyze } = useAnalyzeStream();
+  
+  const pendingCount = books.filter((b) => b.status !== "accepted").length;
+  const { text: triggerText, showSpinner } = getTriggerContent(status, pendingCount, books.length, extractedCount);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -122,8 +138,9 @@ export function Analyzer() {
   return (
     <Drawer.Root>
       <Drawer.Trigger asChild>
-        <Button variant="ghost" rounded="full" size="sm" className="h-10 shadow-sm">
-          Scan Bookshelf
+        <Button variant="ghost" rounded="full" size="sm" className="h-10 shadow-sm gap-2">
+          {showSpinner && <Spinner size="sm" />}
+          {triggerText}
         </Button>
       </Drawer.Trigger>
       <Drawer.Portal>

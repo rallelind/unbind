@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAnalyzerStore } from "../../stores/analyzer";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, RotateCcw } from "lucide-react";
 import { BookCard } from "./BookCard";
 import { Button, Spinner } from "../ui";
 
@@ -14,10 +14,13 @@ export function BookViewer() {
     extractedCount,
     nextBook,
     prevBook,
+    reset,
   } = useAnalyzerStore();
 
   const currentBook = books[currentBookIndex];
   const totalBooks = books.length;
+  const acceptedCount = books.filter((b) => b.status === "accepted").length;
+  const allAccepted = totalBooks > 0 && acceptedCount === totalBooks;
 
   useEffect(() => {
     const dot = dotRefs.current.get(currentBookIndex);
@@ -47,6 +50,56 @@ export function BookViewer() {
 
   if (!imageBase64 || books.length === 0) {
     return null;
+  }
+
+  if (allAccepted) {
+    return (
+      <div className="flex flex-col h-full overflow-y-auto">
+        <div className="flex flex-col items-center py-8 px-4">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3">
+            <Check className="w-7 h-7 text-emerald-400" />
+          </div>
+          <h2 className="text-stone-100 font-display text-xl mb-1">All done!</h2>
+          <p className="text-stone-400 text-sm text-center mb-4">
+            {totalBooks} book{totalBooks === 1 ? "" : "s"} added to your library
+          </p>
+          <Button variant="secondary" size="sm" onClick={reset} className="gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Scan Another Shelf
+          </Button>
+        </div>
+
+        <div className="px-4 pb-4 space-y-2">
+          {books.map((book) => (
+            <div
+              key={book.id}
+              className="flex items-center gap-3 p-3 rounded-xl bg-stone-700/30 border border-stone-700/50"
+            >
+              {book.coverImage ? (
+                <img
+                  src={book.coverImage}
+                  alt={book.title ?? "Book cover"}
+                  className="w-10 h-14 object-cover rounded shadow-sm flex-shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-14 bg-stone-700 rounded flex-shrink-0 flex items-center justify-center">
+                  <span className="text-stone-500 text-xs">?</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <span className="block text-stone-100 font-display text-sm leading-tight truncate">
+                  {book.title ?? "Unknown title"}
+                </span>
+                <span className="block text-stone-400 font-ui text-xs mt-0.5 truncate">
+                  {book.author ?? "Unknown author"}
+                </span>
+              </div>
+              <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
