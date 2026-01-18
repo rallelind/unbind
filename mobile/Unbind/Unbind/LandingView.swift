@@ -4,7 +4,7 @@ struct LandingView: View {
     var body: some View {
         VStack(spacing: 0) {
             Text("Unbind")
-                .font(.system(size: 52, weight: .regular, design: .serif))
+                .font(.custom("Playfair Display", size: 52))
                 .foregroundStyle(Color.stone100)
                 .tracking(-0.5)
             
