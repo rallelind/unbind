@@ -3,4 +3,3 @@ export interface IllustrationProps {
   height?: number | string;
   className?: string;
 }
-

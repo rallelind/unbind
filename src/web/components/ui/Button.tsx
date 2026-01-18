@@ -23,7 +23,6 @@ const roundedStyles: Record<ButtonRounded, string> = {
   full: "rounded-full",
 };
 
-// Extra horizontal padding for pill buttons to look balanced
 const sizeStyles: Record<ButtonSize, Record<ButtonRounded, string>> = {
   sm: {
     lg: "px-3 py-2 text-sm",

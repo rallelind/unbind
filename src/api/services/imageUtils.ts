@@ -63,11 +63,9 @@ export async function cropImage(
   imageBase64: string,
   box: BoundingBox
 ): Promise<string> {
-  // Remove data URL prefix if present
   const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
   const imageBuffer = Buffer.from(base64Data, "base64");
 
-  // Get image dimensions for boundary checking
   const metadata = await sharp(imageBuffer).metadata();
   const imgWidth = metadata.width ?? 0;
   const imgHeight = metadata.height ?? 0;

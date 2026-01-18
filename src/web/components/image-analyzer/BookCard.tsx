@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAnalyzerStore, type Book } from "../../stores/analyzer";
 import { Check, Search, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { Button, Input, Spinner } from "../ui";
-import type { BookCandidate, SearchResult } from "../../api";
+import type { BookCandidate, SearchResult } from "../../../shared/types";
 
 interface BookCardProps {
   book: Book;

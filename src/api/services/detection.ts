@@ -214,4 +214,3 @@ export async function detectBooks(
 
   return nmsDetections.sort((a, b) => a.box.x - b.box.x);
 }
-

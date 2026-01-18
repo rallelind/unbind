@@ -3,60 +3,10 @@ import { streamSSE } from "hono/streaming";
 import { detectBooks } from "./services/detection";
 import { cropImage, getImageDimensions, preprocessImage, preprocessSpineForOCR } from "./services/imageUtils";
 import { extractBookInfo } from "./services/extraction";
-import { verifyBook, searchGoogleBooks, type BookCandidate } from "./services/verification";
-
-export type { BookCandidate };
+import { verifyBook, searchGoogleBooks } from "./services/verification";
+import type { DetectionBook, ExtractionResult, SearchResult } from "../shared/types";
 
 export const api = new Hono();
-
-export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export interface DetectionBook {
-  id: string;
-  boundingBox: BoundingBox;
-  detectionConfidence: number;
-}
-
-export interface ExtractionResult {
-  id: string;
-  title: string | null;
-  author: string | null;
-  verified: boolean;
-  coverImage: string | null;
-  verifiedTitle: string | null;
-  verifiedAuthor: string | null;
-  candidates: BookCandidate[];
-  failureReason: string | null;
-}
-
-export type SSEEvent =
-  | { type: "detections"; data: { total: number; books: DetectionBook[] } }
-  | { type: "extraction"; data: ExtractionResult }
-  | { type: "complete" }
-  | { type: "error"; message: string };
-
-export interface Book {
-  id: string;
-  title: string | null;
-  author: string | null;
-  boundingBox: BoundingBox;
-  detectionConfidence: number;
-}
-
-export interface AnalyzeResponse {
-  books: Book[];
-}
-
-export interface SearchResult {
-  title: string;
-  author: string | null;
-  coverImage: string | null;
-}
 
 api.get("/search", async (c) => {
   const query = c.req.query("q");

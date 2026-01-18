@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { BoundingBox, DetectionBook, ExtractionResult, BookCandidate } from "../api";
+import type { BoundingBox, DetectionBook, ExtractionResult, BookCandidate } from "../../shared/types";
 
 export interface Book {
   id: string;
@@ -161,4 +161,3 @@ export const useAnalyzerStore = create<AnalyzerState>((set, get) => ({
     set(initialState);
   },
 }));
-

@@ -1,8 +1,8 @@
 import { serve } from "bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { api } from "./api";
-import index from "./index.html";
+import { api } from "./routes";
+import index from "../web/index.html";
 
 const app = new Hono();
 

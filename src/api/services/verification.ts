@@ -1,6 +1,9 @@
 import OpenAI from "openai";
 import { zodTextFormat, zodResponsesFunction } from "openai/helpers/zod";
 import { z } from "zod";
+import type { BookCandidate } from "../../shared/types";
+
+export type { BookCandidate };
 
 const openai = new OpenAI();
 
@@ -34,13 +37,6 @@ const verificationResponseSchema = z.object({
 });
 
 type VerificationResponse = z.infer<typeof verificationResponseSchema>;
-
-export interface BookCandidate {
-  title: string;
-  author: string | null;
-  coverImage: string | null;
-  score: number;
-}
 
 export interface VerificationResult {
   verified: boolean;

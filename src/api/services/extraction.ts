@@ -60,4 +60,3 @@ Use null for any field you cannot clearly read. It's better to return null than 
     return { title: null, author: null };
   }
 }
-

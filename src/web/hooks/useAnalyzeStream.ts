@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useAnalyzerStore } from "../stores/analyzer";
-import type { DetectionBook, ExtractionResult } from "../api";
+import type { DetectionBook, ExtractionResult } from "../../shared/types";
 
 interface DetectionsEventData {
   total: number;
