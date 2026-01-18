@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct LandingView: View {
+
+    @State private var isShowingScanner = false
+
     var body: some View {
         VStack(spacing: 0) {
             Text("Unbind")
@@ -24,7 +27,7 @@ struct LandingView: View {
                 .padding(.horizontal, 32)
             
             Button {
-                
+                isShowingScanner = true
             } label: {
                 Text("Scan Bookshelf")
                     .font(.system(size: 14, weight: .medium))
@@ -35,6 +38,9 @@ struct LandingView: View {
                     .clipShape(Capsule())
             }
             .padding(.top, 40)
+        }
+        .sheet(isPresented: $isShowingScanner) {
+            ScannerView()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, 24)
