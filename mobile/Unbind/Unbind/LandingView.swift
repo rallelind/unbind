@@ -7,6 +7,11 @@ struct LandingView: View {
                 .font(.system(size: 48, weight: .regular, design: .serif))
                 .foregroundStyle(Color.stone100)
             
+            Image("BookShelf")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 168)
+            
             Text("Simply take a photo of your bookshelf and we'll identify every title to unbind them from the physical shelf and adding them to your digital library.")
                 .font(.system(size: 18))
                 .foregroundStyle(Color.stone400)
