@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct IdleView: View {
+
+    var onTakePhoto: () -> Void
+    var onChooseFromLibrary: () -> Void
+    
     var body: some View {
         Image("Camera")
             .resizable()
@@ -29,14 +33,14 @@ struct IdleView: View {
         .padding(.bottom, 32)
 
         Button("Take Photo") {
-            // TODO: Take photo
+            onTakePhoto()
         }
         .buttonStyle(PrimaryButtonStyle())
         .padding(.horizontal, 24)
         .padding(.top, 12)
 
         Button("Choose from Library") {
-            // TODO: Choose from library
+            onChooseFromLibrary()
         }
         .buttonStyle(SecondaryButtonStyle())
         .padding(.horizontal, 24)

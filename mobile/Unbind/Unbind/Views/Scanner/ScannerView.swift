@@ -3,14 +3,16 @@ import SwiftUI
 enum ScannerStatus {
     case idle
     case detecting
-    case extracting
-    case complete
+    case review
     case error(String)
 }
 
 struct ScannerView: View {
 
     @State private var status: ScannerStatus = .idle
+    @State private var selectedImage: UIImage?
+    @State private var showCamera = false
+    @State private var showLibrary = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,12 +24,16 @@ struct ScannerView: View {
 
             switch status {
             case .idle:
-                IdleView()
+                IdleView(
+                    onTakePhoto: {
+                        showCamera = true
+                    },
+                    onChooseFromLibrary: {
+                        showLibrary = true
+                    })
             case .detecting:
-                EmptyView()
-            case .extracting:
-                EmptyView()
-            case .complete:
+                DetectingView()
+            case .review:
                 EmptyView()
             case .error(let message):
                 EmptyView()
@@ -38,5 +44,17 @@ struct ScannerView: View {
         .background(Color.stone800)
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
+        .sheet(isPresented: $showCamera) {
+            ImagePicker(image: $selectedImage, sourceType: .camera)
+        }
+        .sheet(isPresented: $showLibrary) {
+            ImagePicker(image: $selectedImage, sourceType: .photoLibrary)
+        }
+        .onChange(of: selectedImage) { oldValue, newValue in
+            if newValue != nil {
+                status = .detecting
+                // Later: trigger the API call here
+            }
+        }
     }
 }
