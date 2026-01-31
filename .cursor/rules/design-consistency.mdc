@@ -1,0 +1,39 @@
+---
+description: Ensure design consistency between web and mobile platforms
+globs: ["*.tsx", "*.swift", "*.css"]
+---
+
+# Design Consistency Between Web and Mobile
+
+When working on UI for this project, ensure web and mobile implementations match.
+
+## Font Mapping
+
+| Purpose | Web (Tailwind) | iOS (SwiftUI) |
+|---------|----------------|---------------|
+| Display/Title | `font-display` → Playfair Display | `.custom("Playfair Display", size: X)` |
+| Body text | `font-body` → Crimson Pro | `.system(size: X, design: .serif)` |
+| UI elements | `font-ui` → Inter | `.system(size: X, weight: .medium)` |
+
+## Color Mapping (Stone Palette)
+
+Both platforms use the stone color palette. On iOS, use the `Color.stoneXXX` extensions defined in `Theme.swift`.
+
+| Color | Hex | Web Class | iOS |
+|-------|-----|-----------|-----|
+| stone-100 | #f5f5f4 | `text-stone-100` | `Color.stone100` |
+| stone-400 | #a8a29e | `text-stone-400` | `Color.stone400` |
+| stone-700 | #44403c | `bg-stone-700` | `Color.stone700` |
+| stone-800 | #292524 | `bg-stone-800` | `Color.stone800` |
+
+## Before Comparing Web vs Mobile
+
+1. Verify web is using the correct font classes (`font-display`, `font-body`, `font-ui`)
+2. Verify iOS is using the matching font configuration
+3. Check that colors reference the same stone palette values
+
+## Common Mistakes to Avoid
+
+- Using `font-serif` instead of `font-display` for titles (they're different!)
+- Forgetting to register custom fonts in iOS Info.plist
+- Mismatched spacing/padding values between platforms
