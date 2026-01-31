@@ -1,8 +1,23 @@
 import SwiftUI
 
 struct LandingView: View {
-
+    @Environment(AnalyzerViewModel.self) var viewModel
     @State private var isShowingScanner = false
+
+    var buttonText: String {
+        let pendingCount = viewModel.books.filter { $0.status != .accepted }.count
+        
+        switch viewModel.status {
+        case .detecting:
+            return "Detecting..."
+        case .extracting:
+            return "Extracting \(viewModel.extractedCount)/\(viewModel.books.count)"
+        case .complete where pendingCount > 0:
+            return "Review \(pendingCount) Book\(pendingCount == 1 ? "" : "s")"
+        default:
+            return "Scan Bookshelf"
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,7 +44,7 @@ struct LandingView: View {
             Button {
                 isShowingScanner = true
             } label: {
-                Text("Scan Bookshelf")
+                Text(buttonText)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color.stone300)
                     .padding(.horizontal, 24)
