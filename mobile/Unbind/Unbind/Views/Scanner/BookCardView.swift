@@ -3,9 +3,21 @@ import SwiftUI
 struct BookCardView: View {
     let book: Book
     @Environment(AnalyzerViewModel.self) var viewModel
+    
+    @State private var candidateIndex = 0
+    
+    var hasCandidates: Bool { book.candidates.count > 0 }
+    
+    var currentCandidate: BookCandidate? {
+        hasCandidates ? book.candidates[candidateIndex] : nil
+    }
+    
+    var displayTitle: String? { currentCandidate?.title ?? book.title }
+    var displayAuthor: String? { currentCandidate?.author ?? book.author }
+    var displayCover: String? { currentCandidate?.coverImage ?? book.coverImage }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             if book.status == .pending {
                 HStack(spacing: 12) {
                     ProgressView()
@@ -15,15 +27,18 @@ struct BookCardView: View {
                         .foregroundStyle(Color.stone400)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
+                .padding(.vertical, 40)
             } else {
                 VStack(spacing: 12) {
+                    // Candidates navigation
+                    if hasCandidates && book.status != .accepted {
+                        CandidatesView(count: book.candidates.count, currentIndex: $candidateIndex)
+                    }
+                    
                     // Book info
                     HStack(alignment: .top, spacing: 12) {
-                        // Cover placeholder
-                        BookCoverView(coverUrl: book.coverImage)
+                        BookCoverView(coverUrl: displayCover)
 
-                        // Title & Author
                         VStack(alignment: .leading, spacing: 4) {
                             if book.status == .accepted {
                                 HStack(spacing: 4) {
@@ -39,7 +54,7 @@ struct BookCardView: View {
                             Text("Title")
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.stone500)
-                            Text(book.title ?? "Unknown")
+                            Text(displayTitle ?? "Unknown")
                                 .font(.custom("PlayfairDisplay", size: 18))
                                 .foregroundStyle(Color.stone100)
 
@@ -47,7 +62,7 @@ struct BookCardView: View {
                                 .font(.system(size: 12))
                                 .foregroundStyle(Color.stone500)
                                 .padding(.top, 4)
-                            Text(book.author ?? "Unknown")
+                            Text(displayAuthor ?? "Unknown")
                                 .font(.system(size: 14))
                                 .foregroundStyle(Color.stone300)
                         }
@@ -55,11 +70,15 @@ struct BookCardView: View {
                         Spacer()
                     }
 
+                    Spacer(minLength: 12)
+
                     // Accept button
                     if book.status != .accepted {
                         Button {
-                            viewModel.acceptBook(id: book.id)
-                            viewModel.nextBook()
+                            withAnimation {
+                                viewModel.acceptBook(id: book.id)
+                                viewModel.nextBook()
+                            }
                         } label: {
                             Label("Accept", systemImage: "checkmark")
                         }
@@ -70,15 +89,12 @@ struct BookCardView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color.stone800.opacity(0.5))
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundStyle(Color.stone700),
-            alignment: .top
+        .background(
+            Color.stone800.opacity(0.5)
+                .allowsHitTesting(false)
         )
-        .onAppear {
-            print("Cover URL: \(book.coverImage ?? "nil")")
+        .onChange(of: book.id) {
+            candidateIndex = 0
         }
     }
 }

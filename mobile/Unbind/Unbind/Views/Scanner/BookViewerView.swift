@@ -39,6 +39,22 @@ struct BookViewerView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
 
+                if let image = viewModel.selectedImage {
+                    BoundingBoxImageView(
+                        image: image,
+                        books: viewModel.books,
+                        currentIndex: viewModel.currentBookIndex,
+                        onSelectBook: { index in
+                            withAnimation {
+                                viewModel.setCurrentBook(index)
+                            }
+                        }
+                    )
+                    .frame(maxHeight: 250)
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 8)
+                }
+
                 // Swipeable book cards
                 TabView(selection: $viewModel.currentBookIndex) {
                     ForEach(Array(viewModel.books.enumerated()), id: \.offset) { index, book in
