@@ -26,10 +26,8 @@ struct ScannerView: View {
                     })
             case .detecting:
                 DetectingView()
-            case .extracting:
-                EmptyView()
-            case .complete:
-                EmptyView()
+            case .extracting, .complete:
+                BookViewerView()
             case .error(let message):
                 ErrorView(error: message, onRetry: {
                     viewModel.reset()

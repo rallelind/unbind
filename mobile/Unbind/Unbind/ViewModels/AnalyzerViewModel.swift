@@ -1,4 +1,4 @@
-import SwiftUI  
+import SwiftUI
 
 @Observable
 class AnalyzerViewModel {
@@ -43,9 +43,16 @@ class AnalyzerViewModel {
     }
 
     func addExtraction(_ extraction: ExtractionResult) {
-        guard let index = books.firstIndex(where: { $0.id == extraction.id }) else { return }
+        guard let index = books.firstIndex(where: { $0.id == extraction.id }) else {
+            return
+        }
         books[index].apply(extraction)
         extractedCount += 1
+    }
+
+    func setCurrentBook(_ index: Int) {
+        guard index >= 0 && index < books.count else { return }
+        currentBookIndex = index
     }
 
     func setComplete() {

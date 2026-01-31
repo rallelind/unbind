@@ -73,7 +73,7 @@ struct Book: Identifiable {
     }
 }
 
-enum AnalyzerStatus {
+enum AnalyzerStatus: Equatable {
     case idle
     case detecting
     case extracting
